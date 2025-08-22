@@ -32,6 +32,7 @@ function buildPairs(consonantTuples){
       id: `L-${idx}`,
       type: 'letter',
       key: char,
+      char: char,
       display: `<div class='big'>${char}</div>`
     });
     const infoHtml = `
@@ -42,6 +43,7 @@ function buildPairs(consonantTuples){
       id: `I-${idx}`,
       type: 'info',
       key: char,
+      char: char,
       display: infoHtml
     });
   });
@@ -69,6 +71,8 @@ function render(cards){
     div.className='card';
     div.setAttribute('tabindex','0');
     div.dataset.key = card.key;
+    div.dataset.type = card.type;
+    div.dataset.char = card.char;
     div.innerHTML = `
       <div class='inner'>
         <div class='face front'></div>
@@ -101,9 +105,37 @@ function render(cards){
   console.log('Rendered with', cols, 'columns for', cardCount, 'cards on', screenWidth, 'px screen');
 }
 
+function playAudio(consonantChar) {
+  try {
+    // Play audio from the local audio directory
+    const audioPath = `audio/consonant_${consonantChar}_name.mp3`;
+    const audio = new Audio(audioPath);
+    
+    audio.addEventListener('error', () => {
+      console.log(`Audio file not found: ${audioPath}`);
+    });
+    
+    audio.addEventListener('canplay', () => {
+      console.log(`Playing audio for consonant: ${consonantChar}`);
+    });
+    
+    audio.play().catch(err => {
+      console.log(`Could not play audio for ${consonantChar}:`, err.message);
+    });
+  } catch (error) {
+    console.log(`Audio playback error for ${consonantChar}:`, error.message);
+  }
+}
+
 function onReveal(cardEl){
   if(lock || cardEl.classList.contains('revealed') || cardEl.classList.contains('matched')) return;
   cardEl.classList.add('revealed');
+  
+  // Play audio for consonant name cards when revealed
+  if (cardEl.dataset.type === 'info' && cardEl.dataset.char) {
+    playAudio(cardEl.dataset.char);
+  }
+  
   const revealed = cardEl;
 
   if(!firstCard){

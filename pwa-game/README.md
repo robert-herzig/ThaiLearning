@@ -4,22 +4,31 @@ Memory-style matching game to pair Thai consonant letters with their traditional
 
 ## Features
 - Adjustable deck size (8 / 16 / 24 / 44 consonants)
+- **Audio pronunciation**: Plays traditional consonant names when info cards are revealed
 - Accessible keyboard play (Enter/Space to flip)
 - Responsive grid layout
 - Offline capable via Service Worker (PWA)
 - Uses same dataset as your Anki deck (subset exported manually to `data.js`)
 
 ## How to Run (Local)
-Open `index.html` directly OR start a tiny static server to enable full PWA features:
+1. **Generate audio files first** by running the main Anki deck generator:
+   ```bash
+   python ../generate_thai_deck.py
+   ```
+   
+2. **Copy audio files** to the game directory (done automatically if you follow setup):
+   ```bash
+   copy ../audio/consonant_*_name.mp3 audio/
+   ```
 
-### Python 3
-```
-python -m http.server 5173
-```
-Then browse: http://localhost:5173/pwa-game/
+3. **Start local server** to enable full PWA features:
+   ```bash
+   python -m http.server 5173
+   ```
+   Then browse: http://localhost:5173/
 
-### Node
-```
+Alternative with Node:
+```bash
 npx serve -l 5173
 ```
 
