@@ -40,26 +40,32 @@ sudo cp $NGINX_CONFIG $BACKUP_DIR/
 
 # Add Thai game location to Nginx config
 echo "⚙️  Updating Nginx configuration..."
-sudo tee -a $NGINX_CONFIG << 'EOF'
 
-    # Thai Learning PWA
-    location /thai-game/ {
-        alias /var/www/thai-game/;
-        try_files $uri $uri/ /thai-game/index.html;
-        
-        # Enable proper MIME types for audio
-        location ~* \.(mp3|wav|ogg)$ {
-            expires 1y;
-            add_header Cache-Control "public, immutable";
-        }
-        
-        # PWA manifest and service worker
-        location ~* \.(webmanifest|js)$ {
-            expires 1d;
-            add_header Cache-Control "public";
-        }
-    }
-EOF
+# Check if the Thai game location already exists
+if grep -q "location /thai-game/" $NGINX_CONFIG; then
+    echo "ℹ️  Thai game location already exists in Nginx config, skipping..."
+else
+    # Find the last closing brace of a server block and insert before it
+    sudo sed -i '/^[[:space:]]*}[[:space:]]*$/i\
+\
+    # Thai Learning PWA\
+    location /thai-game/ {\
+        alias /var/www/thai-game/;\
+        try_files $uri $uri/ /thai-game/index.html;\
+        \
+        # Enable proper MIME types for audio\
+        location ~* \\.(mp3|wav|ogg)$ {\
+            expires 1y;\
+            add_header Cache-Control "public, immutable";\
+        }\
+        \
+        # PWA manifest and service worker\
+        location ~* \\.(webmanifest|js)$ {\
+            expires 1d;\
+            add_header Cache-Control "public";\
+        }\
+    }' $NGINX_CONFIG
+fi
 
 # Test Nginx config
 echo "🧪 Testing Nginx configuration..."
