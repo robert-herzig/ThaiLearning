@@ -1,7 +1,8 @@
 {
   "name": "Thai Consonant Match",
   "short_name": "ThaiMatch",
-  "start_url": ".",
+  "start_url": "/thai-game/",
+  "scope": "/thai-game/",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#222222",
