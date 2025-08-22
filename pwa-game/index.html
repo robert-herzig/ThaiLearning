@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+  <title>Thai Consonant Match</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#222" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Thai Consonant Match</h1>
+    <div class="controls">
+      <label>Deck Size:
+        <select id="deckSize">
+          <option value="8">8</option>
+          <option value="16">16</option>
+          <option value="24">24</option>
+          <option value="44" selected>44 (All)</option>
+        </select>
+      </label>
+      <button id="newGameBtn">New Game</button>
+      <span id="status"></span>
+    </div>
+  </header>
+  <main>
+    <section id="game" class="grid" aria-live="polite"></section>
+  </main>
+  <footer>
+    <p>Progressive Web App – offline capable. Data derived from your Anki deck.</p>
+  </footer>
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
