@@ -85,24 +85,8 @@ function render(cards){
   });
   gameEl.appendChild(frag);
   
-  // Calculate responsive grid columns based on screen size and card count
-  const screenWidth = window.innerWidth;
-  const cardCount = cards.length;
-  let cols;
-  
-  if (screenWidth < 480) {
-    // Mobile: 3-4 columns max
-    cols = Math.min(4, Math.max(3, Math.ceil(Math.sqrt(cardCount * 0.8))));
-  } else if (screenWidth < 768) {
-    // Tablet: 4-6 columns
-    cols = Math.min(6, Math.max(4, Math.ceil(Math.sqrt(cardCount))));
-  } else {
-    // Desktop: 6-8 columns
-    cols = Math.min(8, Math.max(6, Math.ceil(Math.sqrt(cardCount * 1.2))));
-  }
-  
-  gameEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  console.log('Rendered with', cols, 'columns for', cardCount, 'cards on', screenWidth, 'px screen');
+  // Grid columns are now handled by CSS media queries for better responsive design
+  console.log('Rendered', cards.length, 'cards with CSS-controlled responsive grid');
 }
 
 function playAudio(consonantChar) {
@@ -212,22 +196,4 @@ window.addEventListener('load', ()=>{
   }
 });
 
-// Recalculate grid on resize/orientation change
-window.addEventListener('resize', () => {
-  const cards = Array.from(gameEl.children);
-  if (cards.length > 0) {
-    const cardCount = cards.length;
-    const screenWidth = window.innerWidth;
-    let cols;
-    
-    if (screenWidth < 480) {
-      cols = Math.min(4, Math.max(3, Math.ceil(Math.sqrt(cardCount * 0.8))));
-    } else if (screenWidth < 768) {
-      cols = Math.min(6, Math.max(4, Math.ceil(Math.sqrt(cardCount))));
-    } else {
-      cols = Math.min(8, Math.max(6, Math.ceil(Math.sqrt(cardCount * 1.2))));
-    }
-    
-    gameEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  }
-});
+// Remove resize handler since CSS media queries now handle responsive layout
