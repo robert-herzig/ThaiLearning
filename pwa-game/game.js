@@ -25,6 +25,7 @@ const characterDisplay = document.getElementById('character-display');
 const drawingPhase = document.getElementById('drawing-phase');
 const resultPhase = document.getElementById('result-phase');
 const startDrawingBtn = document.getElementById('start-drawing');
+const replayAudioBtn = document.getElementById('replay-audio');
 const clearCanvasBtn = document.getElementById('clear-canvas');
 const doneDrawingBtn = document.getElementById('done-drawing');
 const nextCharacterBtn = document.getElementById('next-character');
@@ -508,6 +509,10 @@ function showCharacterDisplay() {
   document.getElementById('display-romanization').textContent = currentCharacter.nameRom;
   document.getElementById('display-thai-name').textContent = currentCharacter.nameThai;
   
+  // Play audio when showing the character
+  const audioMode = currentCharacter.type === 'consonant' ? 'consonants' : 'vowels';
+  playAudio(currentCharacter.char, audioMode);
+  
   // Show character display phase
   characterDisplay.style.display = 'block';
   drawingPhase.style.display = 'none';
@@ -630,6 +635,10 @@ function showResult() {
     <div>${currentCharacter.nameThai}</div>
   `;
   
+  // Play audio again when showing the result
+  const audioMode = currentCharacter.type === 'consonant' ? 'consonants' : 'vowels';
+  playAudio(currentCharacter.char, audioMode);
+  
   // Simple feedback (you could enhance this with actual comparison)
   const feedbackEl = document.getElementById('feedback-message');
   const feedbacks = [
@@ -668,6 +677,12 @@ newVowelGameBtn.addEventListener('click', startVowelGame);
 writingTypeSelect.addEventListener('change', updateWritingGroupOptions);
 startWritingBtn.addEventListener('click', startWritingPractice);
 startDrawingBtn.addEventListener('click', startDrawing);
+replayAudioBtn.addEventListener('click', () => {
+  if (currentCharacter) {
+    const audioMode = currentCharacter.type === 'consonant' ? 'consonants' : 'vowels';
+    playAudio(currentCharacter.char, audioMode);
+  }
+});
 clearCanvasBtn.addEventListener('click', clearCanvas);
 doneDrawingBtn.addEventListener('click', finishDrawing);
 nextCharacterBtn.addEventListener('click', nextCharacter);
