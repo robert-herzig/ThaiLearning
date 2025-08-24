@@ -433,6 +433,11 @@ function updateWritingGroupOptions() {
   const writingType = writingTypeSelect.value;
   const groupSelect = writingGroupSelect;
   
+  if (!writingType || !groupSelect) {
+    console.error('Writing elements not found:', { writingType, groupSelect });
+    return;
+  }
+  
   groupSelect.innerHTML = '';
   
   if (writingType === 'consonants') {
@@ -452,6 +457,8 @@ function updateWritingGroupOptions() {
       groupSelect.appendChild(option);
     });
   }
+  
+  console.log(`Updated writing groups for ${writingType}:`, groupSelect.children.length, 'options');
 }
 
 function startWritingPractice() {
@@ -736,10 +743,11 @@ victoryModal.addEventListener('click', (e) => {
 
 window.addEventListener('load', ()=>{
   startConsonantGame(); // Start with consonants by default
-  updateWritingGroupOptions(); // Initialize writing group options
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(console.error);
   }
+  // Initialize writing group options after everything is loaded
+  updateWritingGroupOptions();
 });
 
 // Remove resize handler since CSS media queries now handle responsive layout
