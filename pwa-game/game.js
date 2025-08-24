@@ -431,78 +431,66 @@ function endGame(){
 
 // Writing Practice Functions
 function updateWritingGroupOptions() {
-  console.log('updateWritingGroupOptions called');
-  
   // Make sure elements exist
   const typeSelect = document.getElementById('writingTypeSelect');
   const groupSelect = document.getElementById('writingGroupSelect');
-  
-  if (!typeSelect || !groupSelect) {
-    console.error('Writing select elements not found!', { typeSelect, groupSelect });
-    return;
-  }
-  
+
+  if (!typeSelect || !groupSelect) return;
+
   const writingType = typeSelect.value;
-  console.log('Writing type:', writingType);
-  
-  // Clear existing options
+
   groupSelect.innerHTML = '';
-  
+
   if (writingType === 'consonants') {
-    console.log('Adding consonant groups...');
-    Object.keys(FREQUENCY_GROUPS).forEach(groupKey => {
-      const group = FREQUENCY_GROUPS[groupKey];
-      const option = document.createElement('option');
-      option.value = groupKey;
-      option.textContent = `${groupKey.replace('group', 'Group ')}: ${group.name} (${group.chars.length} chars)`;
-      groupSelect.appendChild(option);
+    // FREQUENCY_GROUPS keys already contain the label; values are arrays of consonant entries
+    Object.keys(FREQUENCY_GROUPS).forEach(key => {
+      const arr = FREQUENCY_GROUPS[key];
+      if (!Array.isArray(arr)) return; // safety
+      const opt = document.createElement('option');
+      opt.value = key; // full descriptive key
+      opt.textContent = `${key} (${arr.length} chars)`;
+      groupSelect.appendChild(opt);
     });
   } else {
-    console.log('Adding vowel groups...');
-    Object.keys(VOWEL_GROUPS).forEach(groupKey => {
-      const group = VOWEL_GROUPS[groupKey];
-      const option = document.createElement('option');
-      option.value = groupKey;
-      option.textContent = `${groupKey.replace('group', 'Group ')}: ${group.name} (${group.chars.length} vowels)`;
-      groupSelect.appendChild(option);
+    // VOWEL_GROUPS values are arrays of vowel entries
+    Object.keys(VOWEL_GROUPS).forEach(key => {
+      const arr = VOWEL_GROUPS[key];
+      if (!Array.isArray(arr)) return;
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = `${key} (${arr.length} vowels)`;
+      groupSelect.appendChild(opt);
     });
   }
-  
-  console.log('Total options added:', groupSelect.children.length);
+
+  // Select first option by default if available
+  if (groupSelect.options.length > 0) {
+    groupSelect.selectedIndex = 0;
+  }
 }
 
 function startWritingPractice() {
   const writingType = writingTypeSelect.value;
   const groupKey = writingGroupSelect.value;
-  
+
   if (writingType === 'consonants') {
-    const group = FREQUENCY_GROUPS[groupKey];
-    writingCharacters = group.chars.map(char => {
-      const consonantData = CONSONANTS.find(c => c[0] === char);
-      return {
-        char: char,
-        nameThai: consonantData[1],
-        nameRom: consonantData[2],
-        type: 'consonant'
-      };
+    const groupArr = FREQUENCY_GROUPS[groupKey];
+    if (!Array.isArray(groupArr)) return;
+    writingCharacters = groupArr.map(entry => {
+      const [char, nameThai, nameRom] = entry; // entry structure: [char, thaiName, romanized, init, final]
+      return { char, nameThai, nameRom, type: 'consonant' };
     });
   } else {
-    const group = VOWEL_GROUPS[groupKey];
-    writingCharacters = group.chars.map(char => {
-      const vowelData = ALL_VOWELS.find(v => v[0] === char);
-      return {
-        char: char,
-        nameThai: vowelData[1],
-        nameRom: vowelData[2],
-        type: 'vowel'
-      };
+    const groupArr = VOWEL_GROUPS[groupKey];
+    if (!Array.isArray(groupArr)) return;
+    writingCharacters = groupArr.map(entry => {
+      const [char, thaiName, romanization] = entry; // vowel entry structure
+      return { char, nameThai: thaiName, nameRom: romanization, type: 'vowel' };
     });
   }
-  
-  // Shuffle the characters for random practice
+
   writingCharacters = shuffle([...writingCharacters]);
   currentCharacterIndex = 0;
-  
   showCharacterDisplay();
 }
 
