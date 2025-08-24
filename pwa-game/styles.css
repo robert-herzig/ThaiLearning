@@ -2,9 +2,13 @@
 body{margin:0;background:#111;color:#eee;min-height:100vh;display:flex;flex-direction:column}
 header{padding:1rem;background:#222;display:flex;flex-wrap:wrap;align-items:center;gap:1rem}
 header h1{flex:1 1 200px;margin:0;font-size:1.4rem}
-.controls{display:flex;align-items:center;gap:.75rem;font-size:.9rem}
+.controls{display:flex;align-items:center;gap:.75rem;font-size:.9rem;flex-wrap:wrap}
+#customSizeContainer{display:none}
 select,button{background:#333;color:#eee;border:1px solid #555;padding:.4rem .7rem;border-radius:6px;cursor:pointer}
+input[type="number"]{background:#333;color:#eee;border:1px solid #555;padding:.4rem .7rem;border-radius:6px;width:80px;text-align:center;font-size:.9rem}
 button:hover,select:hover{background:#3d3d3d}
+input[type="number"]:hover{background:#3d3d3d}
+input[type="number"]:focus{outline:none;border-color:#4caf50;background:#3d3d3d}
 main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:0.5rem;min-height:0;overflow-y:auto;max-height:calc(100vh - 80px)}
 .grid{display:grid;gap:8px;width:100%;max-width:100vw;place-content:start center}
 .card{position:relative;aspect-ratio:3/4;cursor:pointer;perspective:1000px;width:100%;max-width:120px;height:auto}
@@ -21,6 +25,85 @@ main{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:0
 .card.matched .back{outline:3px solid #4caf50}
 #status{font-size:.85rem;min-width:140px}
 footer{padding:.75rem 1rem;font-size:.7rem;text-align:center;background:#181818;color:#aaa}
+
+/* Victory Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-content {
+  background: #222;
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 2px solid #555;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.8rem;
+  color: #4caf50;
+}
+
+.modal-content p {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.primary-btn:hover {
+  background: #45a049;
+}
+
+.secondary-btn {
+  background: #555;
+  color: #eee;
+  border: 1px solid #666;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.secondary-btn:hover {
+  background: #666;
+}
 
 /* Responsive grid layouts */
 @media (max-width: 480px) {

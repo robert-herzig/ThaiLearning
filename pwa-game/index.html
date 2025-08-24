@@ -12,14 +12,24 @@
   <header>
     <h1>Thai Consonant Match</h1>
     <div class="controls">
-      <label>Deck Size:
-        <select id="deckSize">
-          <option value="8">8</option>
-          <option value="16">16</option>
-          <option value="24">24</option>
-          <option value="44" selected>44 (All)</option>
+      <label>Learning Group:
+        <select id="groupSelect">
+          <option value="group1">Group 1: Super Common (6 chars)</option>
+          <option value="group2">Group 2: Very Common (6 chars)</option>
+          <option value="group3">Group 3: Common (6 chars)</option>
+          <option value="group4">Group 4: Moderate (6 chars)</option>
+          <option value="group5">Group 5: Less Common (6 chars)</option>
+          <option value="group6">Group 6: Rare (3 chars)</option>
+          <option value="group7">Group 7: Very Rare (7 chars)</option>
+          <option value="group8">Group 8: Extremely Rare (6 chars)</option>
+          <option value="custom">Custom Size</option>
         </select>
       </label>
+      <div id="customSizeContainer" style="display: none;">
+        <label>Custom Size:
+          <input type="number" id="deckSize" value="8" min="2" max="44" step="1" />
+        </label>
+      </div>
       <button id="newGameBtn">New Game</button>
       <span id="status"></span>
     </div>
@@ -27,10 +37,24 @@
   <main>
     <section id="game" class="grid" aria-live="polite"></section>
   </main>
+  
+  <!-- Victory Modal -->
+  <div id="victoryModal" class="modal">
+    <div class="modal-content">
+      <h2>🎉 Congratulations!</h2>
+      <p id="victoryMessage">Well done! You matched all pairs successfully!</p>
+      <div class="modal-buttons">
+        <button id="playAgainBtn" class="primary-btn">Play Again</button>
+        <button id="closeModalBtn" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+  
   <footer>
     <p>Progressive Web App – offline capable. Data derived from your Anki deck.</p>
   </footer>
   <script src="data.js"></script>
+  <script src="frequency-groups.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
