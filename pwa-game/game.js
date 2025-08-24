@@ -76,7 +76,8 @@ function switchTab(tabName) {
     gameEl.style.display = 'none';
     writingPracticeEl.style.display = 'block';
     statusEl.textContent = '';
-    updateWritingGroupOptions(); // Update group options when switching to writing
+    // Make sure to populate the groups when switching to writing tab
+    setTimeout(updateWritingGroupOptions, 100); // Small delay to ensure DOM is ready
   } else {
     gameEl.style.display = 'grid';
     writingPracticeEl.style.display = 'none';
@@ -430,17 +431,25 @@ function endGame(){
 
 // Writing Practice Functions
 function updateWritingGroupOptions() {
-  const writingType = writingTypeSelect.value;
-  const groupSelect = writingGroupSelect;
+  console.log('updateWritingGroupOptions called');
   
-  if (!writingType || !groupSelect) {
-    console.error('Writing elements not found:', { writingType, groupSelect });
+  // Make sure elements exist
+  const typeSelect = document.getElementById('writingTypeSelect');
+  const groupSelect = document.getElementById('writingGroupSelect');
+  
+  if (!typeSelect || !groupSelect) {
+    console.error('Writing select elements not found!', { typeSelect, groupSelect });
     return;
   }
   
+  const writingType = typeSelect.value;
+  console.log('Writing type:', writingType);
+  
+  // Clear existing options
   groupSelect.innerHTML = '';
   
   if (writingType === 'consonants') {
+    console.log('Adding consonant groups...');
     Object.keys(FREQUENCY_GROUPS).forEach(groupKey => {
       const group = FREQUENCY_GROUPS[groupKey];
       const option = document.createElement('option');
@@ -449,6 +458,7 @@ function updateWritingGroupOptions() {
       groupSelect.appendChild(option);
     });
   } else {
+    console.log('Adding vowel groups...');
     Object.keys(VOWEL_GROUPS).forEach(groupKey => {
       const group = VOWEL_GROUPS[groupKey];
       const option = document.createElement('option');
@@ -458,7 +468,7 @@ function updateWritingGroupOptions() {
     });
   }
   
-  console.log(`Updated writing groups for ${writingType}:`, groupSelect.children.length, 'options');
+  console.log('Total options added:', groupSelect.children.length);
 }
 
 function startWritingPractice() {
@@ -679,6 +689,13 @@ practiceAgainBtn.addEventListener('click', practiceAgain);
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     switchTab(btn.dataset.tab);
+    // If switching to writing tab, ensure groups are populated
+    if (btn.dataset.tab === 'writing') {
+      setTimeout(() => {
+        console.log('Manually calling updateWritingGroupOptions after tab switch');
+        updateWritingGroupOptions();
+      }, 100);
+    }
   });
 });
 
