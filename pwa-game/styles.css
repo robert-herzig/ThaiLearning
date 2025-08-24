@@ -153,3 +153,239 @@ footer{padding:.75rem 1rem;font-size:.7rem;text-align:center;background:#181818;
   }
   .card { max-width: 120px; }
 }
+
+/* Writing Practice Styles */
+.writing-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.character-display {
+  text-align: center;
+  padding: 2rem;
+  background: #222;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+.character-info {
+  margin-bottom: 2rem;
+}
+
+.display-character {
+  font-size: clamp(4rem, 15vw, 8rem);
+  line-height: 1;
+  margin-bottom: 1rem;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.display-romanization {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+  color: #eee;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.display-thai-name {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: #ccc;
+  font-style: italic;
+}
+
+.drawing-phase {
+  text-align: center;
+}
+
+.drawing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+#drawing-prompt {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: #4caf50;
+  font-weight: 600;
+}
+
+#prompt-character {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  color: #eee;
+  margin-left: 0.5rem;
+}
+
+.drawing-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.canvas-container {
+  position: relative;
+  display: inline-block;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+#drawing-canvas {
+  display: block;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: crosshair;
+  touch-action: none;
+  background: white;
+  background-image: 
+    linear-gradient(rgba(200, 200, 200, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 200, 200, 0.3) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+.result-phase {
+  text-align: center;
+}
+
+.result-header h3 {
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  color: #4caf50;
+  margin-bottom: 1.5rem;
+}
+
+.result-comparison {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.result-your-drawing,
+.result-correct {
+  flex: 1;
+  min-width: 200px;
+}
+
+.result-your-drawing h4,
+.result-correct h4 {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+#result-canvas {
+  border: 2px solid #555;
+  border-radius: 8px;
+  background: white;
+}
+
+.result-character-display {
+  font-size: clamp(3rem, 10vw, 5rem);
+  line-height: 1;
+  color: #4caf50;
+  margin-bottom: 1rem;
+  background: #222;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 2px solid #555;
+}
+
+.result-info {
+  font-size: 1rem;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.feedback-message {
+  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.feedback-good {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 2px solid #4caf50;
+}
+
+.feedback-okay {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 2px solid #ffc107;
+}
+
+.feedback-try-again {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 2px solid #f44336;
+}
+
+.result-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.secondary-btn {
+  background: #555;
+  color: #eee;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.secondary-btn:hover {
+  background: #666;
+}
+
+/* Mobile-specific writing adjustments */
+@media (max-width: 480px) {
+  .writing-container {
+    padding: 0.5rem;
+  }
+  
+  .character-display {
+    padding: 1.5rem;
+  }
+  
+  .drawing-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .canvas-container {
+    padding: 0.5rem;
+  }
+  
+  #drawing-canvas {
+    width: 280px;
+    height: 280px;
+  }
+  
+  .result-comparison {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .result-controls {
+    flex-direction: column;
+  }
+  
+  .result-controls button {
+    width: 100%;
+  }
+}

@@ -16,12 +16,38 @@ const victoryMessage = document.getElementById('victoryMessage');
 const playAgainBtn = document.getElementById('playAgainBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
+// Writing practice elements
+const writingPracticeEl = document.getElementById('writing-practice');
+const writingTypeSelect = document.getElementById('writingTypeSelect');
+const writingGroupSelect = document.getElementById('writingGroupSelect');
+const startWritingBtn = document.getElementById('startWritingBtn');
+const characterDisplay = document.getElementById('character-display');
+const drawingPhase = document.getElementById('drawing-phase');
+const resultPhase = document.getElementById('result-phase');
+const startDrawingBtn = document.getElementById('start-drawing');
+const clearCanvasBtn = document.getElementById('clear-canvas');
+const doneDrawingBtn = document.getElementById('done-drawing');
+const nextCharacterBtn = document.getElementById('next-character');
+const practiceAgainBtn = document.getElementById('practice-again');
+const drawingCanvas = document.getElementById('drawing-canvas');
+const resultCanvas = document.getElementById('result-canvas');
+
 // Tab elements
 const tabBtns = document.querySelectorAll('.tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 
 // Game state
-let currentMode = 'consonants'; // 'consonants' or 'vowels'
+let currentMode = 'consonants'; // 'consonants', 'vowels', or 'writing'
+
+// Writing practice state
+let writingCharacters = [];
+let currentCharacterIndex = 0;
+let currentCharacter = null;
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let ctx = null;
+let resultCtx = null;
 
 let firstCard = null;
 let lock = false;
@@ -45,9 +71,19 @@ function switchTab(tabName) {
     content.classList.toggle('active', content.id === `${tabName}-tab`);
   });
   
-  // Clear the game board when switching tabs
-  gameEl.innerHTML = '';
-  statusEl.textContent = '';
+  // Show/hide appropriate sections
+  if (tabName === 'writing') {
+    gameEl.style.display = 'none';
+    writingPracticeEl.style.display = 'block';
+    statusEl.textContent = '';
+    updateWritingGroupOptions(); // Update group options when switching to writing
+  } else {
+    gameEl.style.display = 'grid';
+    writingPracticeEl.style.display = 'none';
+    // Clear the game board when switching tabs
+    gameEl.innerHTML = '';
+    statusEl.textContent = '';
+  }
   
   // Cancel any running timer
   if (timerId) {
@@ -392,8 +428,245 @@ function endGame(){
   }
 }
 
+// Writing Practice Functions
+function updateWritingGroupOptions() {
+  const writingType = writingTypeSelect.value;
+  const groupSelect = writingGroupSelect;
+  
+  groupSelect.innerHTML = '';
+  
+  if (writingType === 'consonants') {
+    Object.keys(FREQUENCY_GROUPS).forEach(groupKey => {
+      const group = FREQUENCY_GROUPS[groupKey];
+      const option = document.createElement('option');
+      option.value = groupKey;
+      option.textContent = `${groupKey.replace('group', 'Group ')}: ${group.name} (${group.chars.length} chars)`;
+      groupSelect.appendChild(option);
+    });
+  } else {
+    Object.keys(VOWEL_GROUPS).forEach(groupKey => {
+      const group = VOWEL_GROUPS[groupKey];
+      const option = document.createElement('option');
+      option.value = groupKey;
+      option.textContent = `${groupKey.replace('group', 'Group ')}: ${group.name} (${group.chars.length} vowels)`;
+      groupSelect.appendChild(option);
+    });
+  }
+}
+
+function startWritingPractice() {
+  const writingType = writingTypeSelect.value;
+  const groupKey = writingGroupSelect.value;
+  
+  if (writingType === 'consonants') {
+    const group = FREQUENCY_GROUPS[groupKey];
+    writingCharacters = group.chars.map(char => {
+      const consonantData = CONSONANTS.find(c => c[0] === char);
+      return {
+        char: char,
+        nameThai: consonantData[1],
+        nameRom: consonantData[2],
+        type: 'consonant'
+      };
+    });
+  } else {
+    const group = VOWEL_GROUPS[groupKey];
+    writingCharacters = group.chars.map(char => {
+      const vowelData = ALL_VOWELS.find(v => v[0] === char);
+      return {
+        char: char,
+        nameThai: vowelData[1],
+        nameRom: vowelData[2],
+        type: 'vowel'
+      };
+    });
+  }
+  
+  // Shuffle the characters for random practice
+  writingCharacters = shuffle([...writingCharacters]);
+  currentCharacterIndex = 0;
+  
+  showCharacterDisplay();
+}
+
+function showCharacterDisplay() {
+  if (currentCharacterIndex >= writingCharacters.length) {
+    // Practice complete
+    alert('🎉 Great job! You\'ve practiced all characters in this group!');
+    resetWritingPractice();
+    return;
+  }
+  
+  currentCharacter = writingCharacters[currentCharacterIndex];
+  
+  document.getElementById('display-character').textContent = currentCharacter.char;
+  document.getElementById('display-romanization').textContent = currentCharacter.nameRom;
+  document.getElementById('display-thai-name').textContent = currentCharacter.nameThai;
+  
+  // Show character display phase
+  characterDisplay.style.display = 'block';
+  drawingPhase.style.display = 'none';
+  resultPhase.style.display = 'none';
+}
+
+function startDrawing() {
+  document.getElementById('prompt-character').textContent = currentCharacter.char;
+  
+  // Initialize canvas
+  if (!ctx) {
+    ctx = drawingCanvas.getContext('2d');
+    resultCtx = resultCanvas.getContext('2d');
+  }
+  
+  clearCanvas();
+  
+  // Show drawing phase
+  characterDisplay.style.display = 'none';
+  drawingPhase.style.display = 'block';
+  resultPhase.style.display = 'none';
+  
+  setupCanvasEvents();
+}
+
+function setupCanvasEvents() {
+  // Mouse events
+  drawingCanvas.addEventListener('mousedown', startDrawingMouse);
+  drawingCanvas.addEventListener('mousemove', drawMouse);
+  drawingCanvas.addEventListener('mouseup', stopDrawing);
+  drawingCanvas.addEventListener('mouseout', stopDrawing);
+  
+  // Touch events for mobile
+  drawingCanvas.addEventListener('touchstart', startDrawingTouch);
+  drawingCanvas.addEventListener('touchmove', drawTouch);
+  drawingCanvas.addEventListener('touchend', stopDrawing);
+  drawingCanvas.addEventListener('touchcancel', stopDrawing);
+}
+
+function startDrawingMouse(e) {
+  isDrawing = true;
+  const rect = drawingCanvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+}
+
+function startDrawingTouch(e) {
+  e.preventDefault();
+  isDrawing = true;
+  const rect = drawingCanvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  lastX = touch.clientX - rect.left;
+  lastY = touch.clientY - rect.top;
+}
+
+function drawMouse(e) {
+  if (!isDrawing) return;
+  
+  const rect = drawingCanvas.getBoundingClientRect();
+  const currentX = e.clientX - rect.left;
+  const currentY = e.clientY - rect.top;
+  
+  draw(currentX, currentY);
+}
+
+function drawTouch(e) {
+  e.preventDefault();
+  if (!isDrawing) return;
+  
+  const rect = drawingCanvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  const currentX = touch.clientX - rect.left;
+  const currentY = touch.clientY - rect.top;
+  
+  draw(currentX, currentY);
+}
+
+function draw(currentX, currentY) {
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(currentX, currentY);
+  ctx.stroke();
+  
+  lastX = currentX;
+  lastY = currentY;
+}
+
+function stopDrawing() {
+  isDrawing = false;
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+}
+
+function finishDrawing() {
+  // Copy the drawing to result canvas (smaller size)
+  resultCtx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+  resultCtx.drawImage(drawingCanvas, 0, 0, drawingCanvas.width, drawingCanvas.height, 
+                     0, 0, resultCanvas.width, resultCanvas.height);
+  
+  showResult();
+}
+
+function showResult() {
+  // Show result phase
+  characterDisplay.style.display = 'none';
+  drawingPhase.style.display = 'none';
+  resultPhase.style.display = 'block';
+  
+  // Display the correct character
+  document.getElementById('result-character').textContent = currentCharacter.char;
+  document.getElementById('result-info').innerHTML = `
+    <div><strong>${currentCharacter.nameRom}</strong></div>
+    <div>${currentCharacter.nameThai}</div>
+  `;
+  
+  // Simple feedback (you could enhance this with actual comparison)
+  const feedbackEl = document.getElementById('feedback-message');
+  const feedbacks = [
+    { message: "Great effort! Keep practicing to improve your strokes.", class: "feedback-good" },
+    { message: "Good try! Pay attention to the character proportions.", class: "feedback-okay" },
+    { message: "Nice work! Practice makes perfect.", class: "feedback-good" }
+  ];
+  
+  const randomFeedback = feedbacks[Math.floor(Math.random() * feedbacks.length)];
+  feedbackEl.textContent = randomFeedback.message;
+  feedbackEl.className = `feedback-message ${randomFeedback.class}`;
+}
+
+function nextCharacter() {
+  currentCharacterIndex++;
+  showCharacterDisplay();
+}
+
+function practiceAgain() {
+  showCharacterDisplay();
+}
+
+function resetWritingPractice() {
+  characterDisplay.style.display = 'block';
+  drawingPhase.style.display = 'none';
+  resultPhase.style.display = 'none';
+  writingCharacters = [];
+  currentCharacterIndex = 0;
+  currentCharacter = null;
+}
+
 newGameBtn.addEventListener('click', startConsonantGame);
 newVowelGameBtn.addEventListener('click', startVowelGame);
+
+// Writing practice event listeners
+writingTypeSelect.addEventListener('change', updateWritingGroupOptions);
+startWritingBtn.addEventListener('click', startWritingPractice);
+startDrawingBtn.addEventListener('click', startDrawing);
+clearCanvasBtn.addEventListener('click', clearCanvas);
+doneDrawingBtn.addEventListener('click', finishDrawing);
+nextCharacterBtn.addEventListener('click', nextCharacter);
+practiceAgainBtn.addEventListener('click', practiceAgain);
 
 // Tab switching
 tabBtns.forEach(btn => {
@@ -463,6 +736,7 @@ victoryModal.addEventListener('click', (e) => {
 
 window.addEventListener('load', ()=>{
   startConsonantGame(); // Start with consonants by default
+  updateWritingGroupOptions(); // Initialize writing group options
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(console.error);
   }

@@ -16,6 +16,7 @@
     <div class="tab-nav">
       <button class="tab-btn active" data-tab="consonants">Consonants</button>
       <button class="tab-btn" data-tab="vowels">Vowels</button>
+      <button class="tab-btn" data-tab="writing">Writing</button>
     </div>
     
     <!-- Consonants Tab -->
@@ -65,10 +66,81 @@
       </div>
     </div>
     
+    <!-- Writing Tab -->
+    <div id="writing-tab" class="tab-content">
+      <div class="controls">
+        <label>Character Type:
+          <select id="writingTypeSelect">
+            <option value="consonants">Consonants</option>
+            <option value="vowels">Vowels</option>
+          </select>
+        </label>
+        <label>Group:
+          <select id="writingGroupSelect">
+            <option value="group1">Group 1</option>
+          </select>
+        </label>
+        <button id="startWritingBtn">Start Practice</button>
+      </div>
+    </div>
+    
     <div id="status"></div>
   </header>
   <main>
+    <!-- Memory Game Section -->
     <section id="game" class="grid" aria-live="polite"></section>
+    
+    <!-- Writing Practice Section -->
+    <section id="writing-practice" class="writing-container" style="display: none;">
+      <!-- Character Display Phase -->
+      <div id="character-display" class="character-display">
+        <div class="character-info">
+          <div id="display-character" class="display-character"></div>
+          <div id="display-romanization" class="display-romanization"></div>
+          <div id="display-thai-name" class="display-thai-name"></div>
+        </div>
+        <button id="start-drawing" class="primary-btn">Start Drawing</button>
+      </div>
+      
+      <!-- Drawing Phase -->
+      <div id="drawing-phase" class="drawing-phase" style="display: none;">
+        <div class="drawing-header">
+          <div id="drawing-prompt">Draw: <span id="prompt-character"></span></div>
+          <div class="drawing-controls">
+            <button id="clear-canvas" class="secondary-btn">Clear</button>
+            <button id="done-drawing" class="primary-btn">Done</button>
+          </div>
+        </div>
+        <div class="canvas-container">
+          <canvas id="drawing-canvas" width="300" height="300"></canvas>
+        </div>
+      </div>
+      
+      <!-- Result Phase -->
+      <div id="result-phase" class="result-phase" style="display: none;">
+        <div class="result-header">
+          <h3 id="result-title">How did you do?</h3>
+        </div>
+        <div class="result-comparison">
+          <div class="result-your-drawing">
+            <h4>Your Drawing</h4>
+            <canvas id="result-canvas" width="150" height="150"></canvas>
+          </div>
+          <div class="result-correct">
+            <h4>Correct Form</h4>
+            <div id="result-character" class="result-character-display"></div>
+            <div id="result-info" class="result-info"></div>
+          </div>
+        </div>
+        <div class="result-feedback">
+          <div id="feedback-message" class="feedback-message"></div>
+        </div>
+        <div class="result-controls">
+          <button id="next-character" class="primary-btn">Next Character</button>
+          <button id="practice-again" class="secondary-btn">Practice Again</button>
+        </div>
+      </div>
+    </section>
   </main>
   
   <!-- Victory Modal -->
