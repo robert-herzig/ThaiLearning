@@ -3,14 +3,25 @@
 
 const gameEl = document.getElementById('game');
 const groupSelect = document.getElementById('groupSelect');
+const vowelGroupSelect = document.getElementById('vowelGroupSelect');
 const customSizeContainer = document.getElementById('customSizeContainer');
+const vowelCustomSizeContainer = document.getElementById('vowelCustomSizeContainer');
 const deckSizeEl = document.getElementById('deckSize');
+const vowelDeckSizeEl = document.getElementById('vowelDeckSize');
 const newGameBtn = document.getElementById('newGameBtn');
+const newVowelGameBtn = document.getElementById('newVowelGameBtn');
 const statusEl = document.getElementById('status');
 const victoryModal = document.getElementById('victoryModal');
 const victoryMessage = document.getElementById('victoryMessage');
 const playAgainBtn = document.getElementById('playAgainBtn');
 const closeModalBtn = document.getElementById('closeModalBtn');
+
+// Tab elements
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+// Game state
+let currentMode = 'consonants'; // 'consonants' or 'vowels'
 
 let firstCard = null;
 let lock = false;
@@ -19,6 +30,31 @@ let totalPairs = 0;
 let moves = 0;
 let startTime = 0;
 let timerId = null;
+
+// Tab switching functionality
+function switchTab(tabName) {
+  currentMode = tabName;
+  
+  // Update tab buttons
+  tabBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tabName);
+  });
+  
+  // Update tab content
+  tabContents.forEach(content => {
+    content.classList.toggle('active', content.id === `${tabName}-tab`);
+  });
+  
+  // Clear the game board when switching tabs
+  gameEl.innerHTML = '';
+  statusEl.textContent = '';
+  
+  // Cancel any running timer
+  if (timerId) {
+    cancelAnimationFrame(timerId);
+    timerId = null;
+  }
+}
 
 function sample(array, n){
   const arr = [...array];
@@ -29,29 +65,53 @@ function sample(array, n){
   return arr.slice(0,n);
 }
 
-function buildPairs(consonantTuples){
-  // Each pair: one card with letter, one card with name+sounds
+function buildPairs(items, mode = 'consonants'){
   const cards = [];
-  consonantTuples.forEach((c, idx) => {
-    const [char, nameThai, nameRom, initSound, finalSound] = c;
-    cards.push({
-      id: `L-${idx}`,
-      type: 'letter',
-      key: char,
-      char: char,
-      display: `<div class='big'>${char}</div>`
-    });
-    const infoHtml = `
-      <div class='thai small'>${nameThai}</div>
-      <div class='roman'>${nameRom}</div>
-      <div class='meta'>Init: ${escapeHtml(initSound)}<br>Final: ${escapeHtml(finalSound)}</div>`;
-    cards.push({
-      id: `I-${idx}`,
-      type: 'info',
-      key: char,
-      char: char,
-      display: infoHtml
-    });
+  
+  items.forEach((item, idx) => {
+    if (mode === 'consonants') {
+      // Consonant format: [char, nameThai, nameRom, initSound, finalSound]
+      const [char, nameThai, nameRom, initSound, finalSound] = item;
+      cards.push({
+        id: `L-${idx}`,
+        type: 'letter',
+        key: char,
+        char: char,
+        display: `<div class='big'>${char}</div>`
+      });
+      const infoHtml = `
+        <div class='thai small'>${nameThai}</div>
+        <div class='roman'>${nameRom}</div>
+        <div class='meta'>Init: ${escapeHtml(initSound)}<br>Final: ${escapeHtml(finalSound)}</div>`;
+      cards.push({
+        id: `I-${idx}`,
+        type: 'info',
+        key: char,
+        char: char,
+        display: infoHtml
+      });
+    } else {
+      // Vowel format: [symbol, thai_name, romanization, sound_description, example_sound]
+      const [symbol, thaiName, romanization, soundDesc, exampleSound] = item;
+      cards.push({
+        id: `L-${idx}`,
+        type: 'vowel',
+        key: symbol,
+        char: symbol,
+        display: `<div class='big vowel-symbol'>${symbol}</div>`
+      });
+      const infoHtml = `
+        <div class='thai small'>${thaiName}</div>
+        <div class='roman'>${romanization}</div>
+        <div class='meta'>Sound: ${escapeHtml(soundDesc)}<br>Example: ${escapeHtml(exampleSound)}</div>`;
+      cards.push({
+        id: `I-${idx}`,
+        type: 'vowel-info',
+        key: symbol,
+        char: symbol,
+        display: infoHtml
+      });
+    }
   });
   return cards;
 }
@@ -95,10 +155,62 @@ function render(cards){
   console.log('Rendered', cards.length, 'cards with CSS-controlled responsive grid');
 }
 
-function playAudio(consonantChar) {
+function playAudio(char, mode = null) {
+  // If mode is not specified, determine from current game mode
+  if (!mode) {
+    mode = currentMode;
+  }
+  
   try {
-    // Play audio from the local audio directory
-    const audioPath = `audio/consonant_${consonantChar}_name.mp3`;
+    let audioPath;
+    if (mode === 'consonants') {
+      audioPath = `audio/consonant_${char}_name.mp3`;
+    } else {
+      // For vowels, use the improved filename mapping
+      const vowelFilenameMap = {
+        'อะ': 'a_short',
+        'อา': 'a_long',
+        'อิ': 'i_short',
+        'อี': 'i_long',
+        'อึ': 'ue_short',
+        'อื': 'ue_long',
+        'อุ': 'u_short',
+        'อู': 'u_long',
+        'เอะ': 'e_short',
+        'เอ': 'e_long',
+        'แอะ': 'ae_short',
+        'แอ': 'ae_long',
+        'เอียะ': 'ia_short',
+        'เอีย': 'ia_long',
+        'เอือะ': 'uea_short',
+        'เอือ': 'uea_long',
+        'อัวะ': 'ua_short',
+        'อัว': 'ua_long',
+        'โอะ': 'o_short',
+        'โอ': 'o_long',
+        'เอาะ': 'aw_short',
+        'ออ': 'aw_long',
+        'เออะ': 'ər_short',
+        'เออ': 'ər_long',
+        'อำ': 'am',
+        'ใอ': 'ai_mai',
+        'ไอ': 'ai_sai',
+        'เอา': 'ao',
+        'ฤ': 'rue_short',
+        'ฤา': 'rue_long',
+        'ฦ': 'lue_short',
+        'ฦา': 'lue_long'
+      };
+      
+      const filenameKey = vowelFilenameMap[char];
+      if (filenameKey) {
+        audioPath = `audio/vowel_${filenameKey}.mp3`;
+      } else {
+        console.log(`No audio mapping found for vowel: ${char}`);
+        return;
+      }
+    }
+    
     const audio = new Audio(audioPath);
     
     audio.addEventListener('error', () => {
@@ -106,14 +218,14 @@ function playAudio(consonantChar) {
     });
     
     audio.addEventListener('canplay', () => {
-      console.log(`Playing audio for consonant: ${consonantChar}`);
+      console.log(`Playing audio for ${mode}: ${char}`);
     });
     
     audio.play().catch(err => {
-      console.log(`Could not play audio for ${consonantChar}:`, err.message);
+      console.log(`Could not play audio for ${char}:`, err.message);
     });
   } catch (error) {
-    console.log(`Audio playback error for ${consonantChar}:`, error.message);
+    console.log(`Audio playback error for ${char}:`, error.message);
   }
 }
 
@@ -121,9 +233,9 @@ function onReveal(cardEl){
   if(lock || cardEl.classList.contains('revealed') || cardEl.classList.contains('matched')) return;
   cardEl.classList.add('revealed');
   
-  // Play audio for consonant name cards when revealed
-  if (cardEl.dataset.type === 'info' && cardEl.dataset.char) {
-    playAudio(cardEl.dataset.char);
+  // Play audio for info cards when revealed (both consonants and vowels)
+  if ((cardEl.dataset.type === 'info' || cardEl.dataset.type === 'vowel-info') && cardEl.dataset.char) {
+    playAudio(cardEl.dataset.char, currentMode);
   }
   
   const revealed = cardEl;
@@ -168,7 +280,12 @@ function tick(){
 }
 
 function startGame(){
-  console.log('Starting game with group selection:', groupSelect.value);
+  startConsonantGame();
+}
+
+function startConsonantGame(){
+  console.log('Starting consonant game with group selection:', groupSelect.value);
+  currentMode = 'consonants';
   cancelAnimationFrame(timerId);
   matches = 0; moves = 0; firstCard = null; lock=false;
   
@@ -200,7 +317,51 @@ function startGame(){
   }
   
   console.log('Chosen consonants:', chosen.length);
-  const pairs = buildPairs(chosen);
+  const pairs = buildPairs(chosen, 'consonants');
+  console.log('Generated pairs:', pairs.length);
+  totalPairs = pairs.length / 2;
+  const full = shuffle(pairs);
+  render(full);
+  startTime = Date.now();
+  updateStatus();
+  tick();
+}
+
+function startVowelGame(){
+  console.log('Starting vowel game with group selection:', vowelGroupSelect.value);
+  currentMode = 'vowels';
+  cancelAnimationFrame(timerId);
+  matches = 0; moves = 0; firstCard = null; lock=false;
+  
+  let chosen;
+  
+  if (vowelGroupSelect.value === 'vowelCustom') {
+    // Use custom size with random selection
+    let n = parseInt(vowelDeckSizeEl.value, 10);
+    if (isNaN(n) || n < 2) {
+      n = 2;
+      vowelDeckSizeEl.value = 2;
+    } else if (n > ALL_VOWELS.length) {
+      n = ALL_VOWELS.length;
+      vowelDeckSizeEl.value = ALL_VOWELS.length;
+    }
+    chosen = sample(ALL_VOWELS, n);
+  } else {
+    // Use vowel group
+    const groupKey = vowelGroupSelect.value.replace('group', 'Group ') + ':';
+    const groupName = Object.keys(VOWEL_GROUPS).find(key => key.startsWith(groupKey.replace(':', '')));
+    
+    if (groupName) {
+      chosen = VOWEL_GROUPS[groupName];
+      console.log(`Using ${groupName}:`, chosen.map(v => v[0]));
+    } else {
+      // Fallback to Group 1 if something goes wrong
+      chosen = VOWEL_GROUPS['Group 1: Basic Monophthongs (1-8)'];
+    }
+  }
+  
+  console.log('Chosen vowels:', chosen.length);
+  const pairs = buildPairs(chosen, 'vowels');
   console.log('Generated pairs:', pairs.length);
   totalPairs = pairs.length / 2;
   const full = shuffle(pairs);
@@ -231,14 +392,31 @@ function endGame(){
   }
 }
 
-newGameBtn.addEventListener('click', startGame);
+newGameBtn.addEventListener('click', startConsonantGame);
+newVowelGameBtn.addEventListener('click', startVowelGame);
 
-// Handle group selection changes
+// Tab switching
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    switchTab(btn.dataset.tab);
+  });
+});
+
+// Handle consonant group selection changes
 groupSelect.addEventListener('change', () => {
   if (groupSelect.value === 'custom') {
     customSizeContainer.style.display = 'block';
   } else {
     customSizeContainer.style.display = 'none';
+  }
+});
+
+// Handle vowel group selection changes
+vowelGroupSelect.addEventListener('change', () => {
+  if (vowelGroupSelect.value === 'vowelCustom') {
+    vowelCustomSizeContainer.style.display = 'block';
+  } else {
+    vowelCustomSizeContainer.style.display = 'none';
   }
 });
 
@@ -252,10 +430,24 @@ deckSizeEl.addEventListener('input', () => {
   }
 });
 
+// Add input validation for vowel deck size
+vowelDeckSizeEl.addEventListener('input', () => {
+  let value = parseInt(vowelDeckSizeEl.value, 10);
+  if (isNaN(value) || value < 2) {
+    vowelDeckSizeEl.value = 2;
+  } else if (value > ALL_VOWELS.length) {
+    vowelDeckSizeEl.value = ALL_VOWELS.length;
+  }
+});
+
 // Victory modal event handlers
 playAgainBtn.addEventListener('click', () => {
   victoryModal.classList.remove('show');
-  startGame();
+  if (currentMode === 'consonants') {
+    startConsonantGame();
+  } else {
+    startVowelGame();
+  }
 });
 
 closeModalBtn.addEventListener('click', () => {
@@ -270,7 +462,7 @@ victoryModal.addEventListener('click', (e) => {
 });
 
 window.addEventListener('load', ()=>{
-  startGame();
+  startConsonantGame(); // Start with consonants by default
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('./sw.js').catch(console.error);
   }

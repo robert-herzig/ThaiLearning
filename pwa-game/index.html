@@ -10,29 +10,62 @@
 </head>
 <body>
   <header>
-    <h1>Thai Consonant Match</h1>
-    <div class="controls">
-      <label>Learning Group:
-        <select id="groupSelect">
-          <option value="group1">Group 1: Super Common (6 chars)</option>
-          <option value="group2">Group 2: Very Common (6 chars)</option>
-          <option value="group3">Group 3: Common (6 chars)</option>
-          <option value="group4">Group 4: Moderate (6 chars)</option>
-          <option value="group5">Group 5: Less Common (6 chars)</option>
-          <option value="group6">Group 6: Rare (3 chars)</option>
-          <option value="group7">Group 7: Very Rare (7 chars)</option>
-          <option value="group8">Group 8: Extremely Rare (6 chars)</option>
-          <option value="custom">Custom Size</option>
-        </select>
-      </label>
-      <div id="customSizeContainer" style="display: none;">
-        <label>Custom Size:
-          <input type="number" id="deckSize" value="8" min="2" max="44" step="1" />
-        </label>
-      </div>
-      <button id="newGameBtn">New Game</button>
-      <span id="status"></span>
+    <h1>Thai Learning Game</h1>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="consonants">Consonants</button>
+      <button class="tab-btn" data-tab="vowels">Vowels</button>
     </div>
+    
+    <!-- Consonants Tab -->
+    <div id="consonants-tab" class="tab-content active">
+      <div class="controls">
+        <label>Consonant Group:
+          <select id="groupSelect">
+            <option value="group1">Group 1: Super Common (6 chars)</option>
+            <option value="group2">Group 2: Very Common (6 chars)</option>
+            <option value="group3">Group 3: Common (6 chars)</option>
+            <option value="group4">Group 4: Moderate (6 chars)</option>
+            <option value="group5">Group 5: Less Common (6 chars)</option>
+            <option value="group6">Group 6: Rare (3 chars)</option>
+            <option value="group7">Group 7: Very Rare (7 chars)</option>
+            <option value="group8">Group 8: Extremely Rare (6 chars)</option>
+            <option value="custom">Custom Size</option>
+          </select>
+        </label>
+        <div id="customSizeContainer" style="display: none;">
+          <label>Custom Size:
+            <input type="number" id="deckSize" value="8" min="2" max="44" step="1" />
+          </label>
+        </div>
+        <button id="newGameBtn">New Game</button>
+      </div>
+    </div>
+    
+    <!-- Vowels Tab -->
+    <div id="vowels-tab" class="tab-content">
+      <div class="controls">
+        <label>Vowel Group:
+          <select id="vowelGroupSelect">
+            <option value="group1">Group 1: Basic Monophthongs (8 vowels)</option>
+            <option value="group2">Group 2: Early Compounds (6 vowels)</option>
+            <option value="group3">Group 3: Uea/Ua & O Sounds (6 vowels)</option>
+            <option value="group4">Group 4: Aw-like & Mid Vowels (6 vowels)</option>
+            <option value="group5">Group 5: Special Forms (6 vowels)</option>
+            <option value="vowelCustom">Custom Size</option>
+          </select>
+        </label>
+        <div id="vowelCustomSizeContainer" style="display: none;">
+          <label>Custom Size:
+            <input type="number" id="vowelDeckSize" value="8" min="2" max="32" step="1" />
+          </label>
+        </div>
+        <button id="newVowelGameBtn">New Game</button>
+      </div>
+    </div>
+    
+    <div id="status"></div>
   </header>
   <main>
     <section id="game" class="grid" aria-live="polite"></section>
@@ -55,6 +88,7 @@
   </footer>
   <script src="data.js"></script>
   <script src="frequency-groups.js"></script>
+  <script src="vowel-groups.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
