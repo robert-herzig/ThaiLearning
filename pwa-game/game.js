@@ -76,12 +76,22 @@ function switchTab(tabName) {
   if (tabName === 'writing') {
     gameEl.style.display = 'none';
     writingPracticeEl.style.display = 'block';
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) spellingTab.style.display = 'none';
     statusEl.textContent = '';
     // Make sure to populate the groups when switching to writing tab
     setTimeout(updateWritingGroupOptions, 100); // Small delay to ensure DOM is ready
+  } else if (tabName === 'spelling') {
+    gameEl.style.display = 'none';
+    writingPracticeEl.style.display = 'none';
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) spellingTab.style.display = 'block';
+    statusEl.textContent = '';
   } else {
     gameEl.style.display = 'grid';
     writingPracticeEl.style.display = 'none';
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) spellingTab.style.display = 'none';
     // Clear the game board when switching tabs
     gameEl.innerHTML = '';
     statusEl.textContent = '';
@@ -1050,33 +1060,6 @@ function retryCurrentWord() {
   // Re-enable hint button
   const hintBtn = document.getElementById('hint-btn');
   if (hintBtn) hintBtn.disabled = false;
-}
-
-// Tab switching functionality update
-const originalSwitchTab = switchTab;
-function switchTab(tabName) {
-  originalSwitchTab(tabName);
-  
-  // Handle spelling tab
-  if (tabName === 'spelling') {
-    gameEl.style.display = 'none';
-    writingPracticeEl.style.display = 'none';
-    const spellingTab = document.getElementById('spelling-tab');
-    if (spellingTab) {
-      spellingTab.style.display = 'block';
-    }
-    statusEl.textContent = '';
-  } else if (tabName === 'writing') {
-    const spellingTab = document.getElementById('spelling-tab');
-    if (spellingTab) {
-      spellingTab.style.display = 'none';
-    }
-  } else {
-    const spellingTab = document.getElementById('spelling-tab');
-    if (spellingTab) {
-      spellingTab.style.display = 'none';
-    }
-  }
 }
 
 // Remove resize handler since CSS media queries now handle responsive layout
