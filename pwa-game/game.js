@@ -768,6 +768,315 @@ window.addEventListener('load', ()=>{
   }
   // Initialize writing group options after everything is loaded
   updateWritingGroupOptions();
+  
+  // Initialize spelling practice
+  initializeSpellingPractice();
 });
+
+// Spelling Practice Functionality
+let spellingState = {
+  currentWord: null,
+  selectedLetters: [],
+  availableLetters: [],
+  attempts: 0,
+  maxAttempts: 3,
+  hintsUsed: 0
+};
+
+function initializeSpellingPractice() {
+  const spellingTab = document.getElementById('spelling-tab');
+  if (!spellingTab) return;
+
+  // Get DOM elements
+  const newWordBtn = document.getElementById('new-word-btn');
+  const playWordBtn = document.getElementById('play-word-btn');
+  const hintBtn = document.getElementById('hint-btn');
+  const clearBtn = document.getElementById('clear-btn');
+  const checkBtn = document.getElementById('check-btn');
+  const nextWordBtn = document.getElementById('next-word-btn');
+  const retryBtn = document.getElementById('retry-btn');
+
+  // Add event listeners
+  if (newWordBtn) newWordBtn.addEventListener('click', startNewSpellingWord);
+  if (playWordBtn) playWordBtn.addEventListener('click', playCurrentWord);
+  if (hintBtn) hintBtn.addEventListener('click', showSpellingHint);
+  if (clearBtn) clearBtn.addEventListener('click', clearSpelling);
+  if (checkBtn) checkBtn.addEventListener('click', checkSpelling);
+  if (nextWordBtn) nextWordBtn.addEventListener('click', startNewSpellingWord);
+  if (retryBtn) retryBtn.addEventListener('click', retryCurrentWord);
+}
+
+function startNewSpellingWord() {
+  // Choose a random word from the database
+  const words = Object.values(THAI_WORDS).flat();
+  spellingState.currentWord = words[Math.floor(Math.random() * words.length)];
+  spellingState.selectedLetters = [];
+  spellingState.attempts = 0;
+  spellingState.hintsUsed = 0;
+
+  // Update display
+  updateSpellingDisplay();
+  setupSpellingLetters();
+  playCurrentWord();
+
+  // Show game interface, hide result
+  document.getElementById('spelling-game').style.display = 'block';
+  document.getElementById('spelling-result').style.display = 'none';
+}
+
+function updateSpellingDisplay() {
+  const wordPrompt = document.getElementById('word-prompt');
+  const wordMeaning = document.getElementById('word-meaning');
+  
+  if (spellingState.currentWord) {
+    wordPrompt.textContent = 'Listen and spell the word:';
+    wordMeaning.textContent = `"${spellingState.currentWord.meaning}"`;
+  }
+}
+
+function setupSpellingLetters() {
+  if (!spellingState.currentWord) return;
+
+  // Get the correct letters for this word
+  const correctLetters = getWordLetters(spellingState.currentWord.thai);
+  
+  // Create distractors (wrong letters)
+  const distractors = createDistractors(correctLetters, 8);
+  
+  // Combine and shuffle
+  spellingState.availableLetters = [...correctLetters, ...distractors]
+    .sort(() => Math.random() - 0.5);
+
+  // Render available letters
+  renderAvailableLetters();
+  
+  // Clear construction area
+  renderSelectedLetters();
+}
+
+function renderAvailableLetters() {
+  const container = document.getElementById('available-letters');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  spellingState.availableLetters.forEach((letter, index) => {
+    const tile = document.createElement('div');
+    tile.className = 'letter-tile';
+    tile.textContent = letter;
+    tile.dataset.index = index;
+    tile.addEventListener('click', () => selectLetter(index));
+    container.appendChild(tile);
+  });
+}
+
+function renderSelectedLetters() {
+  const container = document.getElementById('selected-letters');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  if (spellingState.selectedLetters.length === 0) {
+    container.innerHTML = '<div style="color: #666; font-style: italic;">Click letters to build the word</div>';
+    return;
+  }
+
+  spellingState.selectedLetters.forEach((letter, index) => {
+    const tile = document.createElement('div');
+    tile.className = 'letter-tile selected';
+    tile.textContent = letter;
+    tile.dataset.index = index;
+    tile.addEventListener('click', () => removeLetter(index));
+    container.appendChild(tile);
+  });
+}
+
+function selectLetter(index) {
+  const letter = spellingState.availableLetters[index];
+  
+  // Add to selected letters
+  spellingState.selectedLetters.push(letter);
+  
+  // Remove from available letters
+  spellingState.availableLetters.splice(index, 1);
+  
+  // Re-render
+  renderAvailableLetters();
+  renderSelectedLetters();
+}
+
+function removeLetter(index) {
+  const letter = spellingState.selectedLetters[index];
+  
+  // Remove from selected letters
+  spellingState.selectedLetters.splice(index, 1);
+  
+  // Add back to available letters
+  spellingState.availableLetters.push(letter);
+  
+  // Re-render
+  renderAvailableLetters();
+  renderSelectedLetters();
+}
+
+function clearSpelling() {
+  // Move all selected letters back to available
+  spellingState.availableLetters.push(...spellingState.selectedLetters);
+  spellingState.selectedLetters = [];
+  
+  // Re-render
+  renderAvailableLetters();
+  renderSelectedLetters();
+}
+
+function showSpellingHint() {
+  if (!spellingState.currentWord || spellingState.hintsUsed >= 2) return;
+  
+  const correctLetters = getWordLetters(spellingState.currentWord.thai);
+  const hintIndex = spellingState.hintsUsed;
+  
+  if (hintIndex < correctLetters.length) {
+    const hintLetter = correctLetters[hintIndex];
+    
+    // Find this letter in available letters and highlight it
+    const letterTiles = document.querySelectorAll('#available-letters .letter-tile');
+    letterTiles.forEach(tile => {
+      if (tile.textContent === hintLetter && !tile.classList.contains('disabled')) {
+        tile.style.background = '#ff9800';
+        tile.style.border = '3px solid #f57c00';
+        setTimeout(() => {
+          tile.style.background = '';
+          tile.style.border = '';
+        }, 2000);
+      }
+    });
+    
+    spellingState.hintsUsed++;
+    
+    // Disable hint button if max hints used
+    if (spellingState.hintsUsed >= 2) {
+      document.getElementById('hint-btn').disabled = true;
+    }
+  }
+}
+
+function checkSpelling() {
+  if (!spellingState.currentWord || spellingState.selectedLetters.length === 0) return;
+  
+  const userSpelling = spellingState.selectedLetters.join('');
+  const correctSpelling = spellingState.currentWord.thai;
+  
+  spellingState.attempts++;
+  
+  // Show result
+  showSpellingResult(userSpelling, correctSpelling);
+}
+
+function showSpellingResult(userSpelling, correctSpelling) {
+  // Hide game interface
+  document.getElementById('spelling-game').style.display = 'none';
+  
+  // Show result interface
+  const resultDiv = document.getElementById('spelling-result');
+  resultDiv.style.display = 'block';
+  
+  // Update result displays
+  document.getElementById('your-spelling-display').textContent = userSpelling;
+  document.getElementById('correct-spelling-display').textContent = correctSpelling;
+  
+  // Update feedback
+  const feedbackDiv = document.getElementById('spelling-feedback');
+  const isCorrect = userSpelling === correctSpelling;
+  
+  if (isCorrect) {
+    feedbackDiv.className = 'spelling-feedback feedback-correct';
+    feedbackDiv.innerHTML = `
+      <h3>✅ Excellent!</h3>
+      <p>You spelled "${correctSpelling}" correctly!</p>
+      <p>Meaning: "${spellingState.currentWord.meaning}"</p>
+    `;
+  } else {
+    feedbackDiv.className = 'spelling-feedback feedback-incorrect';
+    const explanation = getSpellingExplanation(userSpelling, correctSpelling);
+    feedbackDiv.innerHTML = `
+      <h3>❌ Not quite right</h3>
+      <p>The correct spelling is "${correctSpelling}"</p>
+      <p>Meaning: "${spellingState.currentWord.meaning}"</p>
+      ${explanation ? `<p class="spelling-explanation">${explanation}</p>` : ''}
+    `;
+  }
+}
+
+function getSpellingExplanation(userSpelling, correctSpelling) {
+  if (userSpelling.length !== correctSpelling.length) {
+    return "Thai words have specific vowel positions. Some vowels appear before, after, above, or below consonants.";
+  }
+  
+  let differences = 0;
+  for (let i = 0; i < correctSpelling.length; i++) {
+    if (userSpelling[i] !== correctSpelling[i]) {
+      differences++;
+    }
+  }
+  
+  if (differences === 1) {
+    return "You're very close! Check the vowel positioning carefully.";
+  } else if (differences <= 2) {
+    return "Good attempt! Remember that Thai vowels can appear in different positions around consonants.";
+  } else {
+    return "Listen to the pronunciation again and pay attention to each sound.";
+  }
+}
+
+function playCurrentWord() {
+  if (spellingState.currentWord && spellingState.currentWord.audio) {
+    playAudio(spellingState.currentWord.audio);
+  }
+}
+
+function retryCurrentWord() {
+  // Reset the current word without choosing a new one
+  spellingState.selectedLetters = [];
+  spellingState.attempts = 0;
+  spellingState.hintsUsed = 0;
+  
+  // Re-setup the interface
+  setupSpellingLetters();
+  
+  // Show game interface, hide result
+  document.getElementById('spelling-game').style.display = 'block';
+  document.getElementById('spelling-result').style.display = 'none';
+  
+  // Re-enable hint button
+  const hintBtn = document.getElementById('hint-btn');
+  if (hintBtn) hintBtn.disabled = false;
+}
+
+// Tab switching functionality update
+const originalSwitchTab = switchTab;
+function switchTab(tabName) {
+  originalSwitchTab(tabName);
+  
+  // Handle spelling tab
+  if (tabName === 'spelling') {
+    gameEl.style.display = 'none';
+    writingPracticeEl.style.display = 'none';
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) {
+      spellingTab.style.display = 'block';
+    }
+    statusEl.textContent = '';
+  } else if (tabName === 'writing') {
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) {
+      spellingTab.style.display = 'none';
+    }
+  } else {
+    const spellingTab = document.getElementById('spelling-tab');
+    if (spellingTab) {
+      spellingTab.style.display = 'none';
+    }
+  }
+}
 
 // Remove resize handler since CSS media queries now handle responsive layout

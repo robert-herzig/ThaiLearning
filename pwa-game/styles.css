@@ -396,3 +396,264 @@ footer{padding:.75rem 1rem;font-size:.7rem;text-align:center;background:#181818;
     width: 100%;
   }
 }
+
+/* Spelling Practice Styles */
+.spelling-container {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.word-audio {
+  text-align: center;
+  padding: 2rem;
+  background: #222;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+}
+
+.audio-info {
+  margin-bottom: 1.5rem;
+}
+
+#word-prompt {
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: #4caf50;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.audio-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.word-meaning {
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  color: #ccc;
+  font-style: italic;
+}
+
+.letter-selection {
+  background: #222;
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.construction-area {
+  background: #333;
+  border: 2px dashed #555;
+  border-radius: 10px;
+  min-height: 80px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selected-letters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 60px;
+  align-items: center;
+}
+
+.letter-tile {
+  background: #4caf50;
+  color: white;
+  border: 2px solid #45a049;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  cursor: pointer;
+  transition: all 0.3s;
+  user-select: none;
+  min-width: 50px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.letter-tile:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.letter-tile.selected {
+  background: #2196F3;
+  border-color: #1976D2;
+}
+
+.letter-tile.disabled {
+  background: #666;
+  border-color: #555;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.available-letters {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #2a2a2a;
+  border-radius: 10px;
+}
+
+.spelling-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hint-btn {
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.hint-btn:hover {
+  background: #f57c00;
+}
+
+.spelling-result {
+  text-align: center;
+}
+
+.spelling-comparison {
+  display: flex;
+  justify-content: space-around;
+  gap: 2rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.your-spelling,
+.correct-spelling {
+  flex: 1;
+  min-width: 200px;
+}
+
+.your-spelling h4,
+.correct-spelling h4 {
+  font-size: 1.2rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.spelling-display {
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  padding: 1rem;
+  background: #333;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  color: #eee;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.2rem;
+}
+
+.spelling-explanation {
+  font-size: 0.9rem;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.spelling-feedback {
+  margin: 2rem 0;
+}
+
+.spelling-result-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feedback-correct {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 2px solid #4caf50;
+}
+
+.feedback-incorrect {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+  border: 2px solid #f44336;
+}
+
+.feedback-partial {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+  border: 2px solid #ffc107;
+}
+
+/* Mobile optimizations for spelling */
+@media (max-width: 480px) {
+  .spelling-container {
+    padding: 0.5rem;
+  }
+  
+  .word-audio {
+    padding: 1.5rem;
+  }
+  
+  .audio-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .audio-controls button {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .available-letters {
+    gap: 0.5rem;
+  }
+  
+  .letter-tile {
+    padding: 0.6rem 0.8rem;
+    min-width: 45px;
+  }
+  
+  .spelling-comparison {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .spelling-controls {
+    flex-direction: column;
+  }
+  
+  .spelling-controls button {
+    width: 100%;
+  }
+  
+  .spelling-result-controls {
+    flex-direction: column;
+  }
+  
+  .spelling-result-controls button {
+    width: 100%;
+  }
+}

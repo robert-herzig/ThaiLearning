@@ -17,6 +17,7 @@
       <button class="tab-btn active" data-tab="consonants">Consonants</button>
       <button class="tab-btn" data-tab="vowels">Vowels</button>
       <button class="tab-btn" data-tab="writing">Writing</button>
+      <button class="tab-btn" data-tab="spelling">Spelling</button>
     </div>
     
     <!-- Consonants Tab -->
@@ -84,6 +85,19 @@
       </div>
     </div>
     
+    <!-- Spelling Tab -->
+    <div id="spelling-tab" class="tab-content">
+      <div class="controls">
+        <label>Difficulty:
+          <select id="spellingDifficultySelect">
+            <option value="beginner">Beginner (3-4 letters)</option>
+            <option value="intermediate">Intermediate (4-5 letters)</option>
+          </select>
+        </label>
+        <button id="startSpellingBtn">Start Spelling</button>
+      </div>
+    </div>
+    
     <div id="status"></div>
   </header>
   <main>
@@ -141,6 +155,59 @@
         <div class="result-controls">
           <button id="next-character" class="primary-btn">Next Character</button>
           <button id="practice-again" class="secondary-btn">Practice Again</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Spelling Practice Section -->
+    <section id="spelling-practice" class="spelling-container" style="display: none;">
+      <!-- Word Audio Phase -->
+      <div id="word-audio" class="word-audio">
+        <div class="audio-info">
+          <div id="word-prompt">Listen and spell the word:</div>
+          <div class="audio-controls">
+            <button id="play-word-audio" class="primary-btn">🔊 Play Word</button>
+            <button id="replay-word-audio" class="secondary-btn">🔄 Replay</button>
+          </div>
+          <div id="word-meaning" class="word-meaning"></div>
+        </div>
+      </div>
+      
+      <!-- Letter Selection Phase -->
+      <div id="letter-selection" class="letter-selection">
+        <div id="construction-area" class="construction-area">
+          <div id="selected-letters" class="selected-letters"></div>
+        </div>
+        <div id="available-letters" class="available-letters"></div>
+        <div class="spelling-controls">
+          <button id="clear-spelling" class="secondary-btn">Clear</button>
+          <button id="check-spelling" class="primary-btn">Check Spelling</button>
+          <button id="show-hint" class="hint-btn">💡 Hint</button>
+        </div>
+      </div>
+      
+      <!-- Spelling Result Phase -->
+      <div id="spelling-result" class="spelling-result" style="display: none;">
+        <div class="result-header">
+          <h3 id="spelling-result-title">Result</h3>
+        </div>
+        <div class="spelling-comparison">
+          <div class="your-spelling">
+            <h4>Your Spelling</h4>
+            <div id="user-spelling" class="spelling-display"></div>
+          </div>
+          <div class="correct-spelling">
+            <h4>Correct Spelling</h4>
+            <div id="correct-spelling" class="spelling-display"></div>
+            <div id="spelling-explanation" class="spelling-explanation"></div>
+          </div>
+        </div>
+        <div class="spelling-feedback">
+          <div id="spelling-feedback-message" class="feedback-message"></div>
+        </div>
+        <div class="spelling-result-controls">
+          <button id="next-word" class="primary-btn">Next Word</button>
+          <button id="try-again" class="secondary-btn">Try Again</button>
         </div>
       </div>
     </section>
