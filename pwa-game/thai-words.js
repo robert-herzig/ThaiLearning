@@ -1,35 +1,153 @@
 // Thai words database for spelling practice
-// Each word entry: [word, romanization, meaning, difficulty, audio_hint]
+// Each word is an object with thai, romanization, meaning, and audio properties
 
 const THAI_WORDS = {
   beginner: [
     // 3-letter words with simple patterns
-    ['มา', 'maa', 'come', 'beginner', 'Simple: consonant + vowel'],
-    ['ไป', 'pai', 'go', 'beginner', 'Vowel ไ comes before consonant'],
-    ['ดี', 'dee', 'good', 'beginner', 'Consonant + vowel อี'],
-    ['นา', 'naa', 'field', 'beginner', 'Consonant + long vowel อา'],
-    ['ปา', 'paa', 'forest', 'beginner', 'Consonant + long vowel อา'],
-    ['บ้า', 'baa', 'crazy', 'beginner', 'Consonant + vowel + tone mark'],
-    ['เก่า', 'gao', 'old', 'beginner', 'Vowel เ before, tone mark on consonant'],
-    ['ใหม่', 'mai', 'new', 'beginner', 'Vowel ใ before consonant, tone mark'],
-    
-    // 4-letter words
-    ['น้อง', 'nong', 'younger sibling', 'beginner', 'Consonant + tone + vowel + final consonant'],
-    ['เมือง', 'meuang', 'city', 'beginner', 'Vowel เ before, complex vowel pattern'],
-    ['เรือ', 'reua', 'boat', 'beginner', 'Vowel เ before, vowel เอือ pattern'],
-    ['เลือก', 'leuak', 'choose', 'beginner', 'Vowel เ before, final consonant'],
+    {
+      thai: 'มา',
+      romanization: 'maa',
+      meaning: 'come',
+      audio: 'word_มา.mp3',
+      hint: 'Simple: consonant + vowel'
+    },
+    {
+      thai: 'ไป',
+      romanization: 'pai', 
+      meaning: 'go',
+      audio: 'word_ไป.mp3',
+      hint: 'Vowel ไ comes before consonant'
+    },
+    {
+      thai: 'ดี',
+      romanization: 'dee',
+      meaning: 'good',
+      audio: 'word_ดี.mp3', 
+      hint: 'Consonant + vowel อี'
+    },
+    {
+      thai: 'นา',
+      romanization: 'naa',
+      meaning: 'rice field',
+      audio: 'word_นา.mp3',
+      hint: 'Consonant + long vowel อา'
+    },
+    {
+      thai: 'ปา',
+      romanization: 'paa', 
+      meaning: 'forest',
+      audio: 'word_ปา.mp3',
+      hint: 'Consonant + long vowel อา'
+    },
+    {
+      thai: 'บ้า',
+      romanization: 'baa',
+      meaning: 'crazy', 
+      audio: 'word_บ้า.mp3',
+      hint: 'Consonant + vowel + tone mark'
+    },
+    {
+      thai: 'เก่า',
+      romanization: 'gao',
+      meaning: 'old',
+      audio: 'word_เก่า.mp3',
+      hint: 'Vowel เ before, tone mark on consonant'
+    },
+    {
+      thai: 'ใหม่',
+      romanization: 'mai',
+      meaning: 'new',
+      audio: 'word_ใหม่.mp3', 
+      hint: 'Vowel ใ before consonant, tone mark'
+    },
+    {
+      thai: 'น้อง',
+      romanization: 'nong',
+      meaning: 'younger sibling',
+      audio: 'word_น้อง.mp3',
+      hint: 'Consonant + tone + vowel + final consonant'
+    },
+    {
+      thai: 'เมือง',
+      romanization: 'meuang', 
+      meaning: 'city',
+      audio: 'word_เมือง.mp3',
+      hint: 'Vowel เ before, complex vowel pattern'
+    }
   ],
   
   intermediate: [
     // 4-5 letter words with more complex patterns
-    ['เสื้อ', 'seua', 'shirt', 'intermediate', 'Vowel เ before, vowel อื above, final vowel โอ'],
-    ['เขียว', 'khiaw', 'green', 'intermediate', 'Vowel เ before, vowel เอียว pattern'],
-    ['ผลไม้', 'phon-la-mai', 'fruit', 'intermediate', 'Compound word with vowel ไ'],
-    ['เครื่อง', 'khreuang', 'machine', 'intermediate', 'Complex consonant cluster + vowel pattern'],
-    ['ความ', 'khwaam', 'meaning/feeling', 'intermediate', 'Consonant cluster + long vowel'],
-    ['เปลี่ยน', 'plian', 'change', 'intermediate', 'Complex consonant + vowel เอีย + final น'],
-    ['เสียง', 'siang', 'sound', 'intermediate', 'Vowel เ before + complex vowel เอีย'],
-    ['เวลา', 'wee-laa', 'time', 'intermediate', 'Vowel เ before + long vowel อา'],
+    {
+      thai: 'เสื้อ',
+      romanization: 'seua',
+      meaning: 'shirt',
+      audio: 'word_เสื้อ.mp3',
+      hint: 'Vowel เ before, vowel อื above, final vowel โอ'
+    },
+    {
+      thai: 'เขียว',
+      romanization: 'khiaw',
+      meaning: 'green', 
+      audio: 'word_เขียว.mp3',
+      hint: 'Vowel เ before, vowel เอียว pattern'
+    },
+    {
+      thai: 'ผลไม้',
+      romanization: 'phon-la-mai',
+      meaning: 'fruit',
+      audio: 'word_ผลไม้.mp3',
+      hint: 'Compound word with vowel ไ'
+    },
+    {
+      thai: 'เครื่อง',
+      romanization: 'khreuang', 
+      meaning: 'machine',
+      audio: 'word_เครื่อง.mp3',
+      hint: 'Complex consonant cluster + vowel pattern'
+    },
+    {
+      thai: 'ความ',
+      romanization: 'khwaam',
+      meaning: 'meaning',
+      audio: 'word_ความ.mp3',
+      hint: 'Consonant cluster + long vowel'
+    },
+    {
+      thai: 'เปลี่ยน',
+      romanization: 'plian',
+      meaning: 'change',
+      audio: 'word_เปลี่ยน.mp3', 
+      hint: 'Complex consonant + vowel เอีย + final น'
+    },
+    {
+      thai: 'เสียง',
+      romanization: 'siang',
+      meaning: 'sound',
+      audio: 'word_เสียง.mp3',
+      hint: 'Vowel เ before + complex vowel เอีย'
+    },
+    {
+      thai: 'เวลา',
+      romanization: 'wee-laa',
+      meaning: 'time',
+      audio: 'word_เวลา.mp3',
+      hint: 'Vowel เ before + long vowel อา'
+    },
+    {
+      thai: 'เรือ',
+      romanization: 'reua',
+      meaning: 'boat',
+      audio: 'word_เรือ.mp3',
+      hint: 'Vowel เ before, vowel เอือ pattern'
+    },
+    {
+      thai: 'เลือก',
+      romanization: 'leuak', 
+      meaning: 'choose',
+      audio: 'word_เลือก.mp3',
+      hint: 'Vowel เ before, final consonant'
+    }
   ]
 };
 

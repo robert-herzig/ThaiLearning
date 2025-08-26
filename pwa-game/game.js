@@ -797,6 +797,13 @@ function initializeSpellingPractice() {
   const spellingTab = document.getElementById('spelling-tab');
   if (!spellingTab) return;
 
+  // Check if THAI_WORDS is loaded
+  if (typeof THAI_WORDS === 'undefined') {
+    console.error('THAI_WORDS database not loaded!');
+    return;
+  }
+  console.log('THAI_WORDS loaded:', THAI_WORDS);
+
   // Get DOM elements
   const newWordBtn = document.getElementById('new-word-btn');
   const playWordBtn = document.getElementById('play-word-btn');
@@ -805,6 +812,16 @@ function initializeSpellingPractice() {
   const checkBtn = document.getElementById('check-btn');
   const nextWordBtn = document.getElementById('next-word-btn');
   const retryBtn = document.getElementById('retry-btn');
+
+  console.log('Spelling practice buttons found:', {
+    newWordBtn: !!newWordBtn,
+    playWordBtn: !!playWordBtn,
+    hintBtn: !!hintBtn,
+    clearBtn: !!clearBtn,
+    checkBtn: !!checkBtn,
+    nextWordBtn: !!nextWordBtn,
+    retryBtn: !!retryBtn
+  });
 
   // Add event listeners
   if (newWordBtn) newWordBtn.addEventListener('click', startNewSpellingWord);
@@ -819,7 +836,16 @@ function initializeSpellingPractice() {
 function startNewSpellingWord() {
   // Choose a random word from the database
   const words = Object.values(THAI_WORDS).flat();
+  console.log('Available words:', words.length);
+  
+  if (words.length === 0) {
+    console.error('No words available in THAI_WORDS database');
+    return;
+  }
+  
   spellingState.currentWord = words[Math.floor(Math.random() * words.length)];
+  console.log('Selected word:', spellingState.currentWord);
+  
   spellingState.selectedLetters = [];
   spellingState.attempts = 0;
   spellingState.hintsUsed = 0;
@@ -1039,8 +1065,21 @@ function getSpellingExplanation(userSpelling, correctSpelling) {
 }
 
 function playCurrentWord() {
-  if (spellingState.currentWord && spellingState.currentWord.audio) {
-    playAudio(spellingState.currentWord.audio);
+  if (spellingState.currentWord) {
+    // For now, we'll use the browser's speech synthesis as a fallback
+    // since we don't have the actual Thai word audio files yet
+    try {
+      const utterance = new SpeechSynthesisUtterance(spellingState.currentWord.thai);
+      utterance.lang = 'th-TH'; // Thai language
+      utterance.rate = 0.8; // Slower rate for learning
+      speechSynthesis.speak(utterance);
+    } catch (error) {
+      console.log('Speech synthesis not available, audio playback skipped');
+      // Could also try to play the audio file if it exists
+      if (spellingState.currentWord.audio) {
+        playAudio(spellingState.currentWord.audio);
+      }
+    }
   }
 }
 
